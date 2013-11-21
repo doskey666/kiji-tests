@@ -1,6 +1,7 @@
 package com.data.bt.schemaupgrade;
 
 import com.data.bt.schemaupgrade.celldecoder.SpecificCellDecoderWithOnlyReaderSchema;
+import com.data.bt.utils.MapUtils;
 import org.apache.avro.Schema;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.hadoop.hbase.HConstants;
@@ -18,15 +19,13 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * Created with IntelliJ IDEA.
  * User: acohen
  * Date: 10/9/13
  * Time: 1:41 PM
- * To change this template use File | Settings | File Templates.
+ * An abstract Gatherer used to read cells with overrides to their WriterSchemas
  */
 public abstract class SchemaUpgradeGatherer extends KijiGatherer<Text, IntWritable> {
 
@@ -35,7 +34,7 @@ public abstract class SchemaUpgradeGatherer extends KijiGatherer<Text, IntWritab
     protected Map<KijiColumnName, Schema> columnFamilies;
 
     public SchemaUpgradeGatherer() {
-        columnFamilies = getColumnFamilies();
+        columnFamilies = getColumnSchemaOverrides();
     }
 
     @Override
@@ -58,7 +57,7 @@ public abstract class SchemaUpgradeGatherer extends KijiGatherer<Text, IntWritab
                     byte[] currentCellSerializedData = currentCell.getValue();
 
                     try {
-                        proccessCurrentCell(tableLayout, deserializedObjects, currentFamilyName, currentColumnName, currentCellsTimestamp, currentCellSerializedData);
+                        processCurrentCell(tableLayout, deserializedObjects, currentFamilyName, currentColumnName, currentCellsTimestamp, currentCellSerializedData);
                     }
                     catch (Exception e) {
                         LOG.error("Failed to convert object with key "
@@ -71,24 +70,14 @@ public abstract class SchemaUpgradeGatherer extends KijiGatherer<Text, IntWritab
         processRow(deserializedObjects, kijiRowData, gathererContext);
     }
 
-    protected void proccessCurrentCell(KijiTableLayout tableLayout, NavigableMap<String, NavigableMap<String, NavigableMap<Long, SpecificRecord>>> deserializedObjects, String currentFamilyName, String currentColumnName, Long currentCellsTimestamp, byte[] currentCellSerializedData) throws IOException {
+    protected void processCurrentCell(KijiTableLayout tableLayout, NavigableMap<String, NavigableMap<String, NavigableMap<Long, SpecificRecord>>> deserializedObjects, String currentFamilyName, String currentColumnName, Long currentCellsTimestamp, byte[] currentCellSerializedData) throws IOException {
         KijiCellDecoder<SpecificRecord> kijiCellDecoder = getDecoder(tableLayout, new KijiColumnName(currentFamilyName, currentColumnName));
         DecodedCell<SpecificRecord> decodedCell = kijiCellDecoder.decodeCell(currentCellSerializedData);
         SpecificRecord data = decodedCell.getData();
 
-        NavigableMap<String, NavigableMap<Long, SpecificRecord>> columnNamesToTimestamps = putIfAbsent(deserializedObjects, currentFamilyName, new TreeMap<String, NavigableMap<Long, SpecificRecord>>());
-        NavigableMap<Long, SpecificRecord> timestampToDeserializedValues = putIfAbsent(columnNamesToTimestamps, currentColumnName, new TreeMap<Long, SpecificRecord>());
-        putIfAbsent(timestampToDeserializedValues, currentCellsTimestamp, data);
-    }
-
-    protected <K,V> V putIfAbsent(Map<K, V> destinationMap, K currentKey, V value) {
-        V foundValue = destinationMap.get(currentKey);
-        if (foundValue == null) {
-            destinationMap.put(currentKey, value);
-            return value;
-        }
-
-        return foundValue;
+        NavigableMap<String, NavigableMap<Long, SpecificRecord>> columnNamesToTimestamps = MapUtils.putIfAbsent(deserializedObjects, currentFamilyName, new TreeMap<String, NavigableMap<Long, SpecificRecord>>());
+        NavigableMap<Long, SpecificRecord> timestampToDeserializedValues = MapUtils.putIfAbsent(columnNamesToTimestamps, currentColumnName, new TreeMap<Long, SpecificRecord>());
+        MapUtils.putIfAbsent(timestampToDeserializedValues, currentCellsTimestamp, data);
     }
 
     protected KijiCellDecoder<SpecificRecord> getDecoder(KijiTableLayout tableLayout, KijiColumnName kijiColumnName) throws IOException {
@@ -126,6 +115,19 @@ public abstract class SchemaUpgradeGatherer extends KijiGatherer<Text, IntWritab
         return builder.build();
     }
 
-    protected abstract Map<KijiColumnName, Schema> getColumnFamilies();
+    /**
+     * Gets a mapping between a KijiColumnName and a schema to use when deserializing it
+     * Specified KijiColumnNames Will also be used in the generated KijiDataRequest
+     * @return
+     */
+    protected abstract Map<KijiColumnName, Schema> getColumnSchemaOverrides();
+
+    /**
+     * A delegate of the "gather" function with the addition of current row cells deserialized using the overrides specified in getColumnSchemaOverrides
+     * @param deserializedObjects
+     * @param kijiRowData
+     * @param textByteWritableGathererContext
+     * @throws IOException
+     */
     protected abstract void processRow(NavigableMap<String, NavigableMap<String, NavigableMap<Long, SpecificRecord>>> deserializedObjects, KijiRowData kijiRowData, GathererContext<Text, IntWritable> textByteWritableGathererContext) throws IOException;
 }

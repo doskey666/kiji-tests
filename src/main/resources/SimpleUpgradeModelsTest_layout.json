@@ -17,11 +17,11 @@
             "compression_type" : "NONE",
             "families" : [
                 {
-                    "name" : "attributes",
-                    "description" : "Attributes extracted from some data source",
+                    "name" : "entity",
+                    "description" : "An entity with its attributes",
                     "map_schema" : {
                         "type" : "CLASS",
-                        "value" : "com.data.bt.models.avro.SimpleUpgradeModelsEntity"
+                        "value" : "com.data.bt.models.legacy.avro.SimpleUpgradeModelsEntity"
                     }
                 }
             ]

@@ -1,5 +1,6 @@
 package com.data.bt.schemaupgrade;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.avro.Schema;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.hadoop.io.IntWritable;
@@ -13,10 +14,8 @@ import org.kiji.schema.KijiURI;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.NavigableMap;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created with IntelliJ IDEA.
@@ -27,8 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SimpleUpgradeModelsUpgradeGatherer extends SchemaUpgradeGatherer {
 
-    protected final static Logger LOG = Logger.getLogger(SimpleUpgradeModelsUpgradeGatherer.class);
-
     @Override
     @SuppressWarnings("unchecked")
     public void setup(GathererContext<Text, IntWritable> context) throws IOException {
@@ -37,11 +34,8 @@ public class SimpleUpgradeModelsUpgradeGatherer extends SchemaUpgradeGatherer {
     }
 
     @Override
-    protected Map<KijiColumnName, Schema> getColumnFamilies() {
-//        return ImmutableMap.of(new KijiColumnName("blueforce_requests", null), BlueForceRequest.SCHEMA$,
-//                new KijiColumnName("reflections", null), PersonReflection.SCHEMA$,
-//                new KijiColumnName("candidates", "candidate_list"), CandidateList.SCHEMA$);
-        return new HashMap<KijiColumnName, Schema>();
+    protected Map<KijiColumnName, Schema> getColumnSchemaOverrides() {
+        return ImmutableMap.of(new KijiColumnName("attributes", null), com.data.bt.models.avro.SimpleUpgradeModelsEntity.SCHEMA$);
     }
 
     @Override
@@ -52,19 +46,18 @@ public class SimpleUpgradeModelsUpgradeGatherer extends SchemaUpgradeGatherer {
         sendToDataServices(newVersionModel);
     }
 
-    private void sendToDataServices(Object newVersionModel) {
-        //To change body of created methods use File | Settings | File Templates.
+    protected void sendToDataServices(Object newVersionModel) {
     }
 
-    private void verify(Object newVersionModel) {
+    protected void verify(Object newVersionModel) {
     }
 
-    private Object convertModel(Object oldVersionModel) {
-        return null;  //To change body of created methods use File | Settings | File Templates.
+    protected Object convertModel(Object oldVersionModel) {
+        return null;
     }
 
-    private Object buildModel(Collection<NavigableMap<String, NavigableMap<Long, SpecificRecord>>> values) {
-        return null;  //To change body of created methods use File | Settings | File Templates.
+    protected Object buildModel(Collection<NavigableMap<String, NavigableMap<Long, SpecificRecord>>> deserializedObjects) {
+        return null;
     }
 
     @Override
