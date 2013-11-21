@@ -35,7 +35,7 @@ public class SimpleUpgradeModelsUpgradeGatherer extends SchemaUpgradeGatherer {
 
     @Override
     protected Map<KijiColumnName, Schema> getColumnSchemaOverrides() {
-        return ImmutableMap.of(new KijiColumnName("attributes", null), com.data.bt.models.avro.SimpleUpgradeModelsEntity.SCHEMA$);
+        return ImmutableMap.of(new KijiColumnName("entity", null), com.data.bt.models.avro.SimpleUpgradeModelsEntity.SCHEMA$);
     }
 
     @Override

@@ -58,8 +58,10 @@ public abstract class SchemaUpgradeGatherer extends KijiGatherer<Text, IntWritab
 
                     try {
                         processCurrentCell(tableLayout, deserializedObjects, currentFamilyName, currentColumnName, currentCellsTimestamp, currentCellSerializedData);
+                        gathererContext.incrementCounter(SchemaUpgradeGathererCounter.SUCCESSFUL_CONVERSIONS);
                     }
                     catch (Exception e) {
+                        gathererContext.incrementCounter(SchemaUpgradeGathererCounter.FAILED_CONVERSIONS);
                         LOG.error("Failed to convert object with key "
                                 + kijiRowData.getEntityId().toString() + ":" + currentFamilyName + ":" + currentColumnName + ":" + currentCellsTimestamp , e);
                     }

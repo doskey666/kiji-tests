@@ -1,6 +1,6 @@
 {
     "name" : "SimpleUpgradeModelsTest",
-    "description" : "A simple example of attributes data",
+    "description" : "A simple example of entity data",
     "version" : "layout-1.1.0",
     "keys_format" : {
         "org.kiji.schema.avro.RowKeyFormat2" : {
@@ -20,8 +20,9 @@
                     "name" : "entity",
                     "description" : "An entity with its attributes",
                     "map_schema" : {
+                        "storage" : "UID",
                         "type" : "CLASS",
-                        "value" : "com.data.bt.models.legacy.avro.SimpleUpgradeModelsEntity"
+                        "value" : "com.data.bt.models.avro.legacy.LegacySimpleUpgradeModelsEntity"
                     }
                 }
             ]

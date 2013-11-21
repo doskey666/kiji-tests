@@ -1,0 +1,29 @@
+[
+{
+  "type": "enum",
+  "namespace" : "com.data.bt.models.avro.legacy",
+  "name": "LegacySimpleUpgradeModelsAttributeType",
+  "description" : "Extracted Attributes types",
+  "symbols" : ["personName", "personFirstName"]
+},
+{
+  "type" : "record",
+  "namespace" : "com.data.bt.models.avro.legacy",
+  "name" : "LegacySimpleUpgradeModelsAttribute",
+  "description" : "A specific column in an HBase table",
+  "fields" : [
+    {"name":"attributeType", "type":["null", "com.data.bt.models.avro.legacy.LegacySimpleUpgradeModelsAttributeType"], "default":null},
+    {"name":"attributeValue", "type":["null", "string"], "default":null}
+  ]
+},
+{
+  "type" : "record",
+  "namespace" : "com.data.bt.models.avro.legacy",
+  "name" : "LegacySimpleUpgradeModelsEntity",
+  "description" : "A specific column in an HBase table",
+  "fields" : [
+    {"name":"attributes", "type":["null", {"type" : "array", "items" : "com.data.bt.models.avro.legacy.LegacySimpleUpgradeModelsAttribute"}], "default":null},
+    {"name":"someOtherData", "type":["null", "string"], "default":null}
+  ]
+}
+]
