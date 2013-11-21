@@ -38,14 +38,15 @@ public class SimpleUpgradeModelsUpgradeGathererTest {
     protected static final String TABLE_LAYOUT = "/SimpleUpgradeModelsTest_layout.json";
 
     /**
-     * This test writes data using a "legacy" schema and then reads it using another schema as if it was the writer schema.
+     * This test writes data using a "legacy" schema and then reads it using another schema as if it was the writer schema
+     *   - The purpose here is just to show how the upgrade mechanism should work
      *
      * The real world flow of the upgrade process is:
      *  - On version v1 the system was installed using some table layout, all of the models were under the package com.data.bt.models.avro,
      *     for example, com.data.bt.models.avro.Entity
      *  - After version v1 was deployed some model changes occurred.
-     *     Instead of working with models that contains both the new members and the old deprecated memebers, we wanted to recreate the models completely
-     *     and keep keep the trunk code as clean as possible by moving all complex conversion to an upgrade module.
+     *     Instead of working with models that contains both the new members and the old deprecated members, we wanted to recreate the models completely
+     *     and keep the trunk code as clean as possible by moving all complex conversions to an upgrade module.
      *  - The upgrade module contains all of the models from version v1 under the package com.data.bt.model.avro.legacy as well as all of the new models
      *     under the normal package (com.data.bt.models.avro)
      *  - During the upgrade process a map-reduce job runs that read all of the cells from the table and deserialize them using the legacy schemas by
