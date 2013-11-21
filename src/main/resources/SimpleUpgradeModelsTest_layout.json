@@ -20,7 +20,6 @@
                     "name" : "entity",
                     "description" : "An entity with its attributes",
                     "map_schema" : {
-                        "storage" : "UID",
                         "type" : "CLASS",
                         "value" : "com.data.bt.models.avro.legacy.LegacySimpleUpgradeModelsEntity"
                     }
