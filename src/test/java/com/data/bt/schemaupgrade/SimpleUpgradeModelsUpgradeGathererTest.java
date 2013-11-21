@@ -37,6 +37,22 @@ public class SimpleUpgradeModelsUpgradeGathererTest {
     public static final String COLUMN_QUALIFIER = "someColumnQualifier";
     protected static final String TABLE_LAYOUT = "/SimpleUpgradeModelsTest_layout.json";
 
+    /**
+     * This test writes data using a "legacy" schema and then reads it using another schema as if it was the writer schema.
+     *
+     * The real world flow of the upgrade process is:
+     *  - On version v1 the system was installed using some table layout, all of the models were under the package com.data.bt.models.avro,
+     *     for example, com.data.bt.models.avro.Entity
+     *  - After version v1 was deployed some model changes occurred.
+     *     Instead of working with models that contains both the new members and the old deprecated memebers, we wanted to recreate the models completely
+     *     and keep keep the trunk code as clean as possible by moving all complex conversion to an upgrade module.
+     *  - The upgrade module contains all of the models from version v1 under the package com.data.bt.model.avro.legacy as well as all of the new models
+     *     under the normal package (com.data.bt.models.avro)
+     *  - During the upgrade process a map-reduce job runs that read all of the cells from the table and deserialize them using the legacy schemas by
+     *     tricking kiji and specifying the legacy schemas as the "writer schemas" (Check out SpecificCellDecoderWithOnlyReaderSchema)
+     *  - The upgrade process writes the new objects into a new kiji schema, index them, etc...
+     * @throws Exception
+     */
     @Test
     public void testReadingWithDifferentWriterSchema() throws Exception {
         String kijiUrl = "kiji://.env/simple_upgrade_test_schema";
