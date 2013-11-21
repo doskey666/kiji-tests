@@ -1,0 +1,30 @@
+{
+    "name" : "SimpleUpgradeModelsTest",
+    "description" : "A simple example of attributes data",
+    "version" : "layout-1.1.0",
+    "keys_format" : {
+        "org.kiji.schema.avro.RowKeyFormat2" : {
+            "encoding" : "RAW"
+        }
+    },
+    "locality_groups" : [
+        {
+            "name" : "default",
+            "description" : "Main locality group",
+            "in_memory" : false,
+            "max_versions" : 100,
+            "ttl_seconds" : 2147483647,
+            "compression_type" : "NONE",
+            "families" : [
+                {
+                    "name" : "attributes",
+                    "description" : "Attributes extracted from some data source",
+                    "map_schema" : {
+                        "type" : "CLASS",
+                        "value" : "com.data.bt.models.avro.SimpleUpgradeModelsEntity"
+                    }
+                }
+            ]
+        }
+    ]
+}
